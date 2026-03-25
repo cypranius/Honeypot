@@ -36,38 +36,13 @@ A fully isolated cybersecurity lab built in VirtualBox, featuring a Cowrie SSH h
 **Dual‑VM Attack Simulation** – Dedicated Kali machine enables safe, repeatable attack simulations without contaminating the honeypot host
 
 ## 🗺️ Network Architecture
-┌─────────────────────────────────────────────────────────────┐
-│                      Host Machine                           │
-│                    (Windows 11)                             │
-│                         │                                    │
-│              ┌──────────┴──────────┐                        │
-│              │    VirtualBox 7.x    │                        │
-│              └──────────┬──────────┘                        │
-│                         │                                    │
-│         ┌───────────────┴───────────────┐                   │
-│         │    Internal Network Switch    │                   │
-│         │         "honeypot-net"        │                   │
-│         │        (192.168.1.0/24)       │                   │
-│         └───────────────┬───────────────┘                   │
-│                         │                                    │
-│         ┌───────────────┴───────────────┐                   │
-│         │                               │                   │
-│    ┌────▼─────┐                    ┌────▼─────┐             │
-│    │   Kali   │                    │  Ubuntu  │             │
-│    │ Attacker │                    │ Honeypot │             │
-│    │ 192.168. │                    │ 192.168. │             │
-│    │  1.20    │                    │  1.10    │             │
-│    └────┬─────┘                    └────┬─────┘             │
-│         │                               │                   │
-│         │    SSH Attacks (Port 22)      │                   │
-│         └──────────────────────────────►│                   │
-│                                          │                   │
-│                                    ┌─────▼─────┐             │
-│                                    │  Cowrie   │             │
-│                                    │  Honeypot │             │
-│                                    │ (Port 22) │             │
-│                                    └───────────┘             │
-└─────────────────────────────────────────────────────────────┘
+| Component | IP Address | Role |
+|:-----------|:------------|:------|
+| **Kali Linux** | 192.168.1.20 | Attacker machine |
+| **Ubuntu Server** | 192.168.1.10 | Honeypot host |
+| **Cowrie** | Port 22 | SSH honeypot |
+| **Virtual Network** | `honeypot-net` | Isolated internal network |
+
 ## 🧠 How The Honeypot Works
 
 A honeypot is a decoy system designed to look like a legitimate server, tricking attackers into connecting and interacting with it. While they explore the fake environment, every action they take, login attempts, commands, file access, is logged for analysis.
