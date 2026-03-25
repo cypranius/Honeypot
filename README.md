@@ -69,7 +69,6 @@ A honeypot is a decoy system designed to look like a legitimate server, tricking
 8. Downloaded the **Server install image** from the [official releases page](https://releases.ubuntu.com/24.04.3/) (file: `ubuntu-24.04.3-live-server-amd64.iso`)
 9. Created Ubuntu VM with 2GB RAM, 2 cores, 25GB storage, installed Ubuntu Server with OpenSSH.
 10. Assigned static IP to Ubuntu:
-  10. Assigned static IP to Ubuntu:
     ```bash
     sudo ip addr flush dev enp0s3
     sudo ip addr add 192.168.1.10/24 dev enp0s3
