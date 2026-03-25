@@ -29,7 +29,7 @@ A fully isolated cybersecurity lab built in VirtualBox, featuring a Cowrie SSH h
 
 - **Isolated Internal Network** – Created a dedicated internal network in VirtualBox (`honeypot-net`) allowing only the Kali attacker and Ubuntu honeypot to communicate, completely air-gapped from the internet
 - **Cowrie SSH Honeypot** – Deployed Cowrie, an open-source medium-interaction honeypot that simulates authentic SSH services and captures all attacker interactions in a safe, controlled environment
-- **JSON Structured Logging** – All attack data — including login attempts, commands, and connection details — is logged in JSON format for easy parsing, analysis, and integration with other tools
+- **JSON Structured Logging** – All attack data including login attempts, commands, and connection details, is logged in JSON format for easy parsing, analysis, and integration with other tools
 - **Static IP Configuration** – Assigned fixed IP addresses (`192.168.1.10` for Ubuntu, `192.168.1.20` for Kali) ensuring reliable, predictable communication between the honeypot and attacker machine
 - **Authbind for Privileged Port Access** – Configured authbind to allow the non-root `cowrie` user to bind to port 22, enabling the honeypot to receive SSH traffic directly without running as root
 **Manual SSH Service Disable** – Disabled systemd's default SSH socket to free port 22 for the honeypot, showing understanding of Linux service management
@@ -44,10 +44,7 @@ A fully isolated cybersecurity lab built in VirtualBox, featuring a Cowrie SSH h
 | **Virtual Network** | `honeypot-net` | Isolated internal network |
 
 ## 🧠 How The Honeypot Works
-
-A honeypot is a decoy system designed to look like a legitimate server, tricking attackers into connecting and interacting with it. While they explore the fake environment, every action they take, login attempts, commands, file access, is logged for analysis.
-
-In this lab, Cowrie acts as the honeypot by simulating a real SSH server on port 22. When the Kali attacker connects, it is presented with a realistic (but fake) Linux shell. Behind the scenes, Cowrie records all activity in structured JSON logs, providing visibility into attacker behavior without any risk to the real system.
+A honeypot is a decoy system designed to look like a legitimate server, tricking attackers into connecting and interacting with it. While they explore the fake environment, every action they take, login attempts, commands, file access, is logged for analysis. In this lab, Cowrie acts as the honeypot by simulating a real SSH server on port 22. When the Kali attacker connects, it is presented with a realistic (but fake) Linux shell. Behind the scenes, Cowrie records all activity in structured JSON logs, providing visibility into attacker behavior without any risk to the real system.
 
 ## 📝 Step-by-Step Process
 1. Downloaded and set up the [Kali Linux VM](https://github.com/cypranius/KaliVM) as shown in the guide.
@@ -142,32 +139,21 @@ In this lab, Cowrie acts as the honeypot by simulating a real SSH server on port
     sudo tail -f cowrie.json
     ``` 
 ## 🐛 Challenges & Lessons Learned
-
 ### Virtual Machine Configuration
 - **Snapshots are essential** – Before making significant changes (network config, Cowrie installation), I took snapshots. This made it easy to revert when something broke, saving hours of rework.
-
 ### Network & Isolation
 - **Plan ahead before isolating** – Before switching the VM to Internal Network (no internet), I made sure all necessary packages, updates, and dependencies were installed. This avoided the time‑wasting cycle of constantly flipping network modes back and forth to grab missing components.
-
 - **Static IPs are essential for lab consistency** – Assigning static IP addresses (`192.168.1.10` for Ubuntu, `192.168.1.20` for Kali) ensured reliable communication between the honeypot and attacker machine. Without them, I'd have to track changing DHCP addresses, which would break the lab every time the VMs rebooted.
-
 - **Verify with multiple methods, don't trust a single status** – After starting Cowrie, `cowrie status` reported it was running, but connections were still failing. I learned to verify with concrete checks: `sudo ss -tlnp | grep :22` to see if the port was actually listening, and testing with an actual SSH connection. A service can report "running" without being functional.
-
 - **Understand how systemd manages ports** – I discovered that systemd's socket activation (`ssh.socket`) was still holding port 22 even after disabling the SSH service. This prevented Cowrie from binding to the port. Disabling both `ssh.service` and `ssh.socket` finally freed it. Lesson: stopping a service doesn't always free its port.
-
 ### Troubleshooting
 - **Password reset didn't stick** – Following [this guide](https://linuxconfig.org/ubuntu-14-04-lost-password-recovery), I reset the password via recovery mode, but it didn't save. AI suggested checking the filesystem mount — recovery mode mounts read‑only. Running `mount -o remount,rw /` before `passwd` fixed it.
-
 - **Privileged ports need special handling** – When Cowrie failed to bind to port 22 with "Permission denied," I learned that non‑root users can't use ports below 1024. Authbind solved this by granting the `cowrie` user specific permission to use port 22 without running as root.
-
 ### Planning & Process
 - **Start with a roadmap** – I dove straight into the honeypot setup, only to realize later I needed to rebuild my Kali VM. Juggling both tasks led to more troubleshooting than building. A 20‑minute plan upfront would have saved hours.
-
 - **Simple passwords are fine for isolated labs** – I thought I'd forgotten my Ubuntu password, but after verifying the account existed and even resetting it once, login still failed. AI suggested the password hash might be corrupted. For an isolated lab, a simple password is sufficient. If you use complex passwords, store them in a password manager to avoid recovery headaches.
 
 ## 📸 Screenshots
-## 📸 Screenshots
-
 | Screenshot | Description |
 |:-----------|:------------|
 | ![Kali IP](https://github.com/user-attachments/assets/0e565e33-4e1d-4ce9-817b-22aa1d6c818b) | Kali VM assigned static IP `192.168.1.20` |
@@ -182,4 +168,5 @@ In this lab, Cowrie acts as the honeypot by simulating a real SSH server on port
 ## 📚 References
 - [Cowrie Official Documentation](https://docs.cowrie.org/) - Complete guide for installation, configuration, and features 
 - [VirtualBox Networking Modes](https://www.virtualbox.org/manual/ch06.html) - Detailed explanation of NAT, Internal Network, Host-Only, and Bridged modes
-- [authbind Manual](https://manpages.debian.org/authbind) - How to allow non-root processes to bind to privileged ports (<1024) 
+- [authbind Manual](https://manpages.debian.org/authbind) - How to allow non-root processes to bind to privileged ports (<1024)
+- **[Ubuntu Password Recovery Guide](https://linuxconfig.org/ubuntu-14-04-lost-password-recovery)** – Step‑by‑step instructions for resetting a lost Ubuntu password via recovery mode. This guide got me into the system, but I needed additional steps (remounting the filesystem as read‑write) to make the change persist, which I solved with AI assistance.
