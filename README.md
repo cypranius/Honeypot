@@ -36,40 +36,38 @@ A fully isolated cybersecurity lab built in VirtualBox, featuring a Cowrie SSH h
 **Dual‑VM Attack Simulation** – Dedicated Kali machine enables safe, repeatable attack simulations without contaminating the honeypot host
 
 ## 🗺️ Network Architecture
-┌─────────────────┐
-│   Windows 11    │
-│   Host Machine  │
-└────────┬────────┘
-         │
-┌────────▼────────┐
-│   VirtualBox    │
-└────────┬────────┘
-         │
-┌────────▼────────┐
-│ "honeypot-net"  │
-│ 192.168.1.0/24  │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    │         │
-┌───▼───┐ ┌───▼───┐
-│ Kali  │ │ Ubuntu│
-│Attacker│ │Honeypot│
-│       │ │       │
-└───┬───┘ └───┬───┘
-    │         │
-    └───┬─────┘
-        │ SSH (22)
-   ┌────▼────┐
-   │ Cowrie  │
-   │Honeypot │
-   └────┬────┘
-        │
-   ┌────▼────┐
-   │  JSON   │
-   │  Logs   │
-   └─────────┘
-
+┌─────────────────────────────────────────────────────────────┐
+│                      Host Machine                           │
+│                    (Windows 11)                             │
+│                         │                                    │
+│              ┌──────────┴──────────┐                        │
+│              │    VirtualBox 7.x    │                        │
+│              └──────────┬──────────┘                        │
+│                         │                                    │
+│         ┌───────────────┴───────────────┐                   │
+│         │    Internal Network Switch    │                   │
+│         │         "honeypot-net"        │                   │
+│         │        (192.168.1.0/24)       │                   │
+│         └───────────────┬───────────────┘                   │
+│                         │                                    │
+│         ┌───────────────┴───────────────┐                   │
+│         │                               │                   │
+│    ┌────▼─────┐                    ┌────▼─────┐             │
+│    │   Kali   │                    │  Ubuntu  │             │
+│    │ Attacker │                    │ Honeypot │             │
+│    │ 192.168. │                    │ 192.168. │             │
+│    │  1.20    │                    │  1.10    │             │
+│    └────┬─────┘                    └────┬─────┘             │
+│         │                               │                   │
+│         │    SSH Attacks (Port 22)      │                   │
+│         └──────────────────────────────►│                   │
+│                                          │                   │
+│                                    ┌─────▼─────┐             │
+│                                    │  Cowrie   │             │
+│                                    │  Honeypot │             │
+│                                    │ (Port 22) │             │
+│                                    └───────────┘             │
+└─────────────────────────────────────────────────────────────┘
 ## 🧠 How The Honeypot Works
 
 A honeypot is a decoy system designed to look like a legitimate server, tricking attackers into connecting and interacting with it. While they explore the fake environment, every action they take, login attempts, commands, file access, is logged for analysis.
@@ -193,10 +191,10 @@ In this lab, Cowrie acts as the honeypot by simulating a real SSH server on port
 - **Simple passwords are fine for isolated labs** – I thought I'd forgotten my Ubuntu password, but after verifying the account existed and even resetting it once, login still failed. AI suggested the password hash might be corrupted. For an isolated lab, a simple password is sufficient. If you use complex passwords, store them in a password manager to avoid recovery headaches.
 
 ## 📸 Screenshots
-[You fill this in]
+
 
 
 ## 📚 References
-- [Cowrie Official Documentation](https://docs.cowrie.org/) - Complete guide for installation, configuration, and features [citation:1][citation:8]
-- [VirtualBox Networking Modes](https://www.virtualbox.org/manual/ch06.html) - Detailed explanation of NAT, Internal Network, Host-Only, and Bridged modes [citation:2]
-- [authbind Manual](https://manpages.debian.org/authbind) - How to allow non-root processes to bind to privileged ports (<1024) [citation:3][citation:6]
+- [Cowrie Official Documentation](https://docs.cowrie.org/) - Complete guide for installation, configuration, and features 
+- [VirtualBox Networking Modes](https://www.virtualbox.org/manual/ch06.html) - Detailed explanation of NAT, Internal Network, Host-Only, and Bridged modes
+- [authbind Manual](https://manpages.debian.org/authbind) - How to allow non-root processes to bind to privileged ports (<1024) 
